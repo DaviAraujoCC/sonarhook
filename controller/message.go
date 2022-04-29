@@ -10,14 +10,14 @@ import (
 )
 
 type Message struct {
-	AnalysedAt string `json:"analysedAt"`
+	AnalysedAt time.Time `json:"analysedAt"`
 	Branch     struct {
 		IsMain bool   `json:"isMain"`
 		Name   string `json:"name"`
 		Type   string `json:"type"`
 		URL    string `json:"url"`
 	} `json:"branch"`
-	ChangedAt string `json:"changedAt"`
+	ChangedAt time.Time `json:"changedAt"`
 	Project   struct {
 		Key  string `json:"key"`
 		Name string `json:"name"`
@@ -46,7 +46,7 @@ type Message struct {
 
 func (m *Message) validateMessage() error {
 
-	if m.AnalysedAt == "" {
+	if m.AnalysedAt == (time.Time{}) {
 		return fmt.Errorf("Incorrect Format:")
 	}
 
@@ -63,9 +63,7 @@ func (m *Message) sendMessage() error {
 
 	bodyMessage.WriteString("*SonarQube Quality Gate*\\n")
 
-	t, _ := time.Parse(time.RFC3339, m.AnalysedAt)
-
-	bodyMessage.WriteString(fmt.Sprintf("Analysed at: %s\\n\\n", t.Format("2006-01-02 15:04:05")))
+	bodyMessage.WriteString(fmt.Sprintf("Analysed at: %s\\n\\n", m.AnalysedAt.Format("2006-01-02 15:04:05")))
 
 	switch m.QualityGate.Status {
 	case "OK":
