@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"sonarhook/config"
 	"sonarhook/controller"
 
 	mux "github.com/gorilla/mux"
@@ -14,7 +15,7 @@ func main() {
 	r.HandleFunc("/webhook", controller.HandleWebhook).Methods("POST")
 
 	server := &http.Server{
-		Addr:    ":30000",
+		Addr:    ":" + config.ServerPort,
 		Handler: r,
 	}
 

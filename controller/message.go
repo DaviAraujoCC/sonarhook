@@ -50,6 +50,10 @@ func (m *Message) validateMessage() error {
 		return fmt.Errorf("Incorrect Format:")
 	}
 
+	if config.Status != "" && m.Status != config.Status {
+		return fmt.Errorf("Ignoring status: %s", m.Status)
+	}
+
 	return nil
 }
 
