@@ -62,7 +62,11 @@ func (m *Message) sendMessage() error {
 	var bodyMessage strings.Builder
 
 	bodyMessage.WriteString("*SonarQube Quality Gate*\\n")
-	bodyMessage.WriteString(fmt.Sprintf("Analysed at: %s\\n\\n", m.AnalysedAt))
+
+	t, _ := time.Parse(time.RFC3339, m.AnalysedAt)
+	//format date to be readable
+
+	bodyMessage.WriteString(fmt.Sprintf("Analysed at: %s\\n\\n", t.Format("2006-01-02 15:04:05")))
 
 	switch m.QualityGate.Status {
 	case "OK":
