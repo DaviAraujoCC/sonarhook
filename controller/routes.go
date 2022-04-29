@@ -23,12 +23,14 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	err = msg.validateMessage()
 	if err != nil {
 		log.Error(err)
+		return
 	}
 
 	// Send the message
 	err = msg.sendMessage()
 	if err != nil {
 		log.Error(err)
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
