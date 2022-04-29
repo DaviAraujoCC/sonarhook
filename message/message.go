@@ -1,4 +1,4 @@
-package controller
+package message
 
 import (
 	"bytes"
@@ -10,14 +10,14 @@ import (
 )
 
 type Message struct {
-	AnalysedAt time.Time `json:"analysedAt"`
+	AnalysedAt string `json:"analysedAt"`
 	Branch     struct {
 		IsMain bool   `json:"isMain"`
 		Name   string `json:"name"`
 		Type   string `json:"type"`
 		URL    string `json:"url"`
 	} `json:"branch"`
-	ChangedAt time.Time `json:"changedAt"`
+	ChangedAt string `json:"changedAt"`
 	Project   struct {
 		Key  string `json:"key"`
 		Name string `json:"name"`
@@ -44,9 +44,9 @@ type Message struct {
 	TaskID    string `json:"taskId"`
 }
 
-func (m *Message) validateMessage() error {
+func (m *Message) ValidateMessage() error {
 
-	if m.AnalysedAt == (time.Time{}) {
+	if m.AnalysedAt == "" {
 		return fmt.Errorf("Incorrect Format:")
 	}
 
@@ -57,13 +57,13 @@ func (m *Message) validateMessage() error {
 	return nil
 }
 
-func (m *Message) sendMessage() error {
+func (m *Message) SendMessage() error {
 
 	var bodyMessage strings.Builder
 
 	bodyMessage.WriteString("*SonarQube Quality Gate*\\n")
 
-	bodyMessage.WriteString(fmt.Sprintf("Analysed at: %s\\n\\n", m.AnalysedAt.Format("2006-01-02 15:04:05")))
+	bodyMessage.WriteString(fmt.Sprintf("Analysed at: %s\\n\\n", m.AnalysedAt))
 
 	switch m.QualityGate.Status {
 	case "OK":
@@ -87,7 +87,6 @@ func (m *Message) sendMessage() error {
 	client.Timeout = 10 * time.Second
 
 	json := []byte(`{"text": "` + bodyMessage.String() + `"}`)
-	fmt.Println(string(json))
 
 	req, err := http.NewRequest("POST", config.GoogleChatWebhookURL, bytes.NewBuffer(json))
 	if err != nil {
