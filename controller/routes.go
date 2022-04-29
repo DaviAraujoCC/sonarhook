@@ -24,6 +24,8 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error(err)
 	}
+
+	// Send the message
 	err = msg.sendMessage()
 	if err != nil {
 		log.Error(err)
