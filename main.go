@@ -2,8 +2,8 @@ package main
 
 import (
 	"net/http"
-	"sonarhook/config"
-	"sonarhook/controller"
+	"sonarhook/src/config"
+	"sonarhook/src/controller"
 
 	mux "github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
@@ -19,7 +19,7 @@ func main() {
 		Handler: r,
 	}
 
-	log.Info("Starting server on port " + server.Addr)
+	log.Info("Starting server on address " + server.Addr)
 	log.Fatal(server.ListenAndServe())
 
 }

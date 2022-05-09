@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-	"sonarhook/config"
+	"sonarhook/src/config"
+	"sonarhook/util"
 	"strings"
 	"time"
 )
@@ -44,49 +45,62 @@ type Message struct {
 	TaskID    string `json:"taskId"`
 }
 
-func (m *Message) ValidateMessage() error {
-
-	if m.AnalysedAt == "" {
-		return fmt.Errorf("Incorrect Format:")
-	}
-
-	if config.Status != "" && m.QualityGate.Status != config.Status {
-		return fmt.Errorf("Ignoring status: %s", m.Status)
-	}
-
-	return nil
+type MessageConstructor interface {
+	ParseMessage() (string, error)
+	SendMessage(text string) error
 }
 
-func (m *Message) SendMessage() error {
+type messageConstructor struct {
+	message Message
+}
+
+func NewMessage(message Message) MessageConstructor {
+	return &messageConstructor{message}
+}
+
+func (mc *messageConstructor) ParseMessage() (string, error) {
+
+	if mc.message.AnalysedAt == "" {
+		return "", fmt.Errorf("Incorrect Format:")
+	}
+
+	if config.Status != "" && mc.message.QualityGate.Status != config.Status {
+		return "", fmt.Errorf("Ignoring status: %s", mc.message.QualityGate.Status)
+	}
 
 	var bodyMessage strings.Builder
 
 	bodyMessage.WriteString("*SonarQube Quality Gate*\\n")
 
-	bodyMessage.WriteString(fmt.Sprintf("Analysed at: %s\\n\\n", m.AnalysedAt))
+	bodyMessage.WriteString(fmt.Sprintf("Analysed at: %s\\n\\n", util.ParseTime(mc.message.AnalysedAt)))
 
-	switch m.QualityGate.Status {
+	switch mc.message.QualityGate.Status {
 	case "OK":
 		bodyMessage.WriteString("*Status*: PASS \xE2\x9C\x85\\n\\n")
 	case "ERROR":
 		bodyMessage.WriteString("*Status*: FAILED \xF0\x9F\x9A\xAB\\n\\n")
 	}
 
-	bodyMessage.WriteString(fmt.Sprintf("*Project:* " + m.Project.Name + "\\n"))
+	bodyMessage.WriteString(fmt.Sprintf("*Project:* " + mc.message.Project.Name + "\\n"))
 
-	switch m.Branch.Type {
+	switch mc.message.Branch.Type {
 	case "BRANCH":
-		bodyMessage.WriteString(fmt.Sprintf("*Branch:* " + m.Branch.Name + "\\n"))
+		bodyMessage.WriteString(fmt.Sprintf("*Branch:* " + mc.message.Branch.Name + "\\n"))
 	case "PULL_REQUEST":
-		bodyMessage.WriteString(fmt.Sprintf("*Pull request*: ID %s\\n", m.Branch.Name))
+		bodyMessage.WriteString(fmt.Sprintf("*Pull request*: ID %s\\n", mc.message.Branch.Name))
 	}
 
-	bodyMessage.WriteString(fmt.Sprintf("*Results:* " + m.Branch.URL + "\\n"))
+	bodyMessage.WriteString(fmt.Sprintf("*Results:* " + mc.message.Branch.URL + "\\n"))
+
+	return bodyMessage.String(), nil
+}
+
+func (mc *messageConstructor) SendMessage(text string) error {
 
 	client := &http.Client{}
 	client.Timeout = 10 * time.Second
 
-	json := []byte(`{"text": "` + bodyMessage.String() + `"}`)
+	json := []byte(`{"text": "` + text + `"}`)
 
 	req, err := http.NewRequest("POST", config.GoogleChatWebhookURL, bytes.NewBuffer(json))
 	if err != nil {

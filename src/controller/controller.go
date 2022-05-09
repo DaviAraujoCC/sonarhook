@@ -3,7 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
-	"sonarhook/message"
+	"sonarhook/src/message"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -20,15 +20,18 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate the message
-	err = msg.ValidateMessage()
+	// Message constructor
+	mc := message.NewMessage(msg)
+
+	// Parse Message
+	text, err := mc.ParseMessage()
 	if err != nil {
 		log.Error(err)
 		return
 	}
 
 	// Send the message
-	err = msg.SendMessage()
+	err = mc.SendMessage(text)
 	if err != nil {
 		log.Error(err)
 		return
