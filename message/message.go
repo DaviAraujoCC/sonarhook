@@ -50,7 +50,7 @@ func (m *Message) ValidateMessage() error {
 		return fmt.Errorf("Incorrect Format:")
 	}
 
-	if config.Status != "" && m.Status != config.Status {
+	if config.Status != "" && m.QualityGate.Status != config.Status {
 		return fmt.Errorf("Ignoring status: %s", m.Status)
 	}
 
