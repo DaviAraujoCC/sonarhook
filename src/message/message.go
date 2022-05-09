@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"sonarhook/src/config"
-	"sonarhook/util"
+	"sonarhook/src/util"
 	"strings"
 	"time"
 )

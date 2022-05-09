@@ -9,10 +9,8 @@ RUN go mod download
 
 
 COPY main.go main.go
-COPY config/ config/
-COPY controller/ controller/
-COPY message/ message/
-COPY util/ util/
+COPY src/ src/
+
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o sonarhook main.go
 
