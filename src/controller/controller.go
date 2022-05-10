@@ -23,15 +23,8 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	// Message constructor
 	mc := message.NewMessage(msg)
 
-	// Parse Message
-	text, err := mc.ParseMessage()
-	if err != nil {
-		log.Error(err)
-		return
-	}
-
 	// Send the message
-	err = mc.SendMessage(text)
+	err = mc.SendMessage()
 	if err != nil {
 		log.Error(err)
 		return

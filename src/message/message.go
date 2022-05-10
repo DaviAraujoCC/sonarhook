@@ -47,7 +47,7 @@ type Message struct {
 
 type MessageConstructor interface {
 	ParseMessage() (string, error)
-	SendMessage(text string) error
+	SendMessage() error
 }
 
 type messageConstructor struct {
@@ -95,7 +95,13 @@ func (mc *messageConstructor) ParseMessage() (string, error) {
 	return bodyMessage.String(), nil
 }
 
-func (mc *messageConstructor) SendMessage(text string) error {
+func (mc *messageConstructor) SendMessage() error {
+
+	// Parse Message
+	text, err := mc.ParseMessage()
+	if err != nil {
+		return err
+	}
 
 	client := &http.Client{}
 	client.Timeout = 10 * time.Second
