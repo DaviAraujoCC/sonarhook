@@ -58,7 +58,7 @@ func NewMessage(message Message) MessageConstructor {
 	return &messageConstructor{message}
 }
 
-func (mc *messageConstructor) ParseMessage() (string, error) {
+func (mc messageConstructor) ParseMessage() (string, error) {
 
 	if mc.message.AnalysedAt == "" {
 		return "", fmt.Errorf("Incorrect Format:")
@@ -90,12 +90,12 @@ func (mc *messageConstructor) ParseMessage() (string, error) {
 		bodyMessage.WriteString(fmt.Sprintf("*Pull request*: ID %s\\n", mc.message.Branch.Name))
 	}
 
-	bodyMessage.WriteString(fmt.Sprintf("*Results:* " + mc.message.Branch.URL + "\\n"))
+	bodyMessage.WriteString(fmt.Sprintf("<" + mc.message.Branch.URL + "|*Click here for results*>\\n"))
 
 	return bodyMessage.String(), nil
 }
 
-func (mc *messageConstructor) SendMessage() error {
+func (mc messageConstructor) SendMessage() error {
 
 	// Parse Message
 	text, err := mc.ParseMessage()
