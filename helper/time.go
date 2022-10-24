@@ -1,7 +1,7 @@
-package util
+package helper
 
 import (
-	"sonarhook/src/config"
+	"sonarhook/config"
 	"strings"
 	"time"
 )
@@ -9,8 +9,6 @@ import (
 func ParseTime(dateTime string) string {
 
 	dateTimeN := strings.SplitN(dateTime, "+", -1)[0]
-
-	// set location America/Sao_Paulo
 
 	loc, _ := time.LoadLocation(config.Timezone)
 

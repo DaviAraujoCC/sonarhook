@@ -2,8 +2,8 @@ package main
 
 import (
 	"net/http"
-	"sonarhook/src/config"
-	"sonarhook/src/controller"
+	"sonarhook/config"
+	"sonarhook/controller"
 
 	mux "github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"

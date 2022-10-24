@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
-	"sonarhook/src/config"
-	"sonarhook/src/util"
+	"sonarhook/config"
+	"sonarhook/helper"
 	"strings"
 	"time"
 )
@@ -72,7 +72,7 @@ func (mc messageConstructor) ParseMessage() (string, error) {
 
 	bodyMessage.WriteString("*SonarQube Quality Gate*\\n")
 
-	bodyMessage.WriteString(fmt.Sprintf("Analysed at: %s\\n\\n", util.ParseTime(mc.message.AnalysedAt)))
+	bodyMessage.WriteString(fmt.Sprintf("Analysed at: %s\\n\\n", helper.ParseTime(mc.message.AnalysedAt)))
 
 	switch mc.message.QualityGate.Status {
 	case "OK":

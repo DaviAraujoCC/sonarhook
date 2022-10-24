@@ -17,6 +17,7 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(r.Body).Decode(&msg)
 	if err != nil {
 		log.Error(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -27,6 +28,7 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	err = mc.SendMessage()
 	if err != nil {
 		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
